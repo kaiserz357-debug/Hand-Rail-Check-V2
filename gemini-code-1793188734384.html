@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hand Rail Check by Ardharn ver01 2026 (ASCE 7-05 / AISC ASD)</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js for Structural Visualization (โหลดไว้ที่ Head ให้โหลดเสร็จก่อน) -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Kanit', 'Inter', sans-serif;
+        }
+        @media print {
+            .no-print {
+                display: none !important;
+            }
+            .print-only {
+                display: block !important;
+            }
+            body {
+                background-color: white;
+            }
+            .shadow-md, .shadow-xl, .shadow-sm {
+                box-shadow: none !important;
+                border: 1px solid #e5e7eb;
+            }
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
+
+    <!-- Header Banner -->
+    <header class="bg-gradient-to-r from-slate-900 via-blue-900 to-indigo-900 text-white shadow-lg no-print">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div>
+                <div class="flex items-center gap-3">
+                    <span class="bg-blue-500/20 border border-blue-400/40 text-blue-300 text-xs px-2.5 py-1 rounded-full font-semibold uppercase tracking-wider">Engineering App</span>
+                    <span class="text-xs text-slate-300">v01.2026</span>
+                </div>
+                <h1 class="text-2xl sm:text-3xl font-bold mt-1 text-white tracking-tight">Hand Rail Check by Ardharn</h1>
+                <p class="text-xs sm:text-sm text-slate-300 mt-0.5">Reference Standard: ASCE 7-05 & AISC ASD (Structural Steel Design)</p>
+            </div>
+            <div class="flex items-center gap-2 self-stretch sm:self-auto justify-end">
+                <!-- Language Toggle Button -->
+                <button onclick="toggleLanguage()" class="px-3.5 py-2 bg-blue-600/80 hover:bg-blue-500 text-white rounded-lg text-sm font-semibold transition flex items-center gap-2 border border-blue-400/30 shadow-sm">
+                    <i class="fa-solid fa-globe"></i>
+                    <span id="lang_toggle_btn">🌐 TH | EN</span>
+                </button>
+                <!-- Print Report Button -->
+                <button onclick="window.print()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-100 rounded-lg text-sm font-medium transition flex items-center justify-center gap-2 border border-slate-700 shadow-sm">
+                    <i class="fa-solid fa-print"></i>
+                    <span data-i18n="print_report">พิมพ์รายงาน</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-grow w-full">
+        
+        <!-- Print Header (Visible only when printing) -->
+        <div class="hidden print-only mb-6 pb-4 border-b">
+            <h1 class="text-2xl font-bold text-gray-900" data-i18n="print_title">รายการคำนวณราวจับบันไดเหล็ก (Handrail Calculation Report)</h1>
+            <p class="text-xs text-gray-500">Design Code: ASCE 7-05 / AISC ASD (Steel Construction Manual)</p>
+            <p class="text-xs text-gray-400 mt-1"><span data-i18n="print_date_label">วันที่พิมพ์:</span> <span id="print_date"></span></p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+            <!-- Sidebar Controls / Input Panel (4 Cols on Desktop) -->
+            <div class="lg:col-span-4 space-y-5 no-print">
+                
+                <!-- Input Configuration Form -->
+                <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 space-y-4">
+                    <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                        <h2 class="text-base font-semibold text-slate-800 flex items-center gap-2">
+                            <i class="fa-solid fa-sliders text-blue-600"></i> <span data-i18n="cfg_title">ตัวแปรบันไดและราวจับ</span>
+                        </h2>
+                        <span class="text-xs text-slate-400" data-i18n="unit_m">ขนาดเป็นเมตร (m)</span>
+                    </div>
+
+                    <!-- Stair Dimensions -->
+                    <div class="space-y-3">
+                        <h3 class="text-xs font-semibold text-blue-900 bg-blue-50 px-2.5 py-1 rounded" data-i18n="sec1_title">1. ขนาดบันได (Stair Geometry)</h3>
+                        
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-xs font-medium text-slate-600 mb-1" for="riser_h" data-i18n="riser_h">ลูกตั้ง Riser (m)</label>
+                                <input type="number" id="riser_h" value="0.18" step="0.01" min="0.05" max="0.5" 
+                                       class="w-full p-2.5 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-slate-600 mb-1" for="tread_w" data-i18n="tread_w">ลูกนอน Tread (m)</label>
+                                <input type="number" id="tread_w" value="0.25" step="0.01" min="0.1" max="1.0" 
+                                       class="w-full p-2.5 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition">
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-xs font-medium text-slate-600 mb-1" for="total_stairs" data-i18n="total_stairs">จำนวนขั้น (Steps)</label>
+                                <input type="number" id="total_stairs" value="9" min="1" max="30" 
+                                       class="w-full p-2.5 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-slate-600 mb-1" for="h_post_m" data-i18n="h_post_m">ความสูงเสา Post (m)</label>
+                                <input type="number" id="h_post_m" value="0.90" step="0.05" min="0.5" max="1.5" 
+                                       class="w-full p-2.5 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Post Spacing -->
+                    <div class="space-y-2 pt-2 border-t border-slate-100">
+                        <h3 class="text-xs font-semibold text-blue-900 bg-blue-50 px-2.5 py-1 rounded" data-i18n="sec2_title">2. ระยะห่างเสา (Post Spacing)</h3>
+                        <div>
+                            <label class="block text-xs font-medium text-slate-600 mb-1" for="post_spacing" data-i18n="post_spacing_lbl">การจัดวางเสาราวจับ</label>
+                            <select id="post_spacing" class="w-full p-2.5 text-sm border border-slate-300 rounded-lg bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition">
+                                <option value="0.05" data-i18n="opt_50mm">ระยะคงที่ @ 50 MM.</option>
+                                <option value="0.10" data-i18n="opt_100mm">ระยะคงที่ @ 100 MM.</option>
+                                <option value="1" selected data-i18n="opt_every1">ทุกๆ 1 ขั้นบันได (Every 1 Step)</option>
+                                <option value="2" data-i18n="opt_every2">ทุกๆ 2 ขั้นบันได (Every 2 Steps)</option>
+                                <option value="3" data-i18n="opt_every3">ทุกๆ 3 ขั้นบันได (Every 3 Steps)</option>
+                                <option value="4" data-i18n="opt_every4">ทุกๆ 4 ขั้นบันได (Every 4 Steps)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Materials Selection -->
+                    <div class="space-y-3 pt-2 border-t border-slate-100">
+                        <h3 class="text-xs font-semibold text-blue-900 bg-blue-50 px-2.5 py-1 rounded" data-i18n="sec3_title">3. หน้าตัดวัสดุ (Material Sections)</h3>
+                        <div>
+                            <label class="block text-xs font-medium text-slate-600 mb-1" for="rail_sel" data-i18n="rail_sel">ราวมือจับ Top Rail</label>
+                            <select id="rail_sel" class="w-full p-2.5 text-sm border border-slate-300 rounded-lg bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"></select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-slate-600 mb-1" for="post_sel" data-i18n="post_sel">เสาราวจับ Vertical Post</label>
+                            <select id="post_sel" class="w-full p-2.5 text-sm border border-slate-300 rounded-lg bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"></select>
+                        </div>
+                    </div>
+
+                    <!-- Load Parameters (ASCE 7-05) -->
+                    <div class="space-y-3 pt-2 border-t border-slate-100">
+                        <h3 class="text-xs font-semibold text-blue-900 bg-blue-50 px-2.5 py-1 rounded" data-i18n="sec4_title">4. น้ำหนักบรรทุกออกแบบ (ASCE 7-05 Loads)</h3>
+                        <div class="grid grid-cols-2 gap-3 text-xs">
+                            <div class="bg-slate-50 p-2.5 rounded border border-slate-200">
+                                <span class="text-slate-500 block" data-i18n="load_conc">Concentrated Load</span>
+                                <span class="font-bold text-slate-800 text-sm">91 kg (200 lbs)</span>
+                            </div>
+                            <div class="bg-slate-50 p-2.5 rounded border border-slate-200">
+                                <span class="text-slate-500 block" data-i18n="load_line">Uniform Line Load</span>
+                                <span class="font-bold text-slate-800 text-sm">75 kg/m (50 lb/ft)</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button onclick="calculateAndRender()" 
+                            class="w-full bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white p-3 rounded-lg font-semibold shadow flex items-center justify-center gap-2 transition">
+                        <i class="fa-solid fa-calculator"></i> <span data-i18n="btn_calc">คำนวณผลลัพธ์</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Main Results & Chart Section (8 Cols on Desktop) -->
+            <div class="lg:col-span-8 space-y-5">
+                
+                <!-- Status Banner -->
+                <div id="status_banner" class="p-4 rounded-xl shadow-sm text-center font-bold text-base sm:text-lg transition-all duration-300 flex items-center justify-center gap-3">
+                    <i id="status_icon" class="fa-solid fa-circle-notch fa-spin text-xl"></i>
+                    <span id="status_text" data-i18n="loading">กำลังโหลดข้อมูล...</span>
+                </div>
+
+                <!-- Metrics Summary Cards -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex flex-col justify-between">
+                        <div class="flex items-center justify-between text-slate-500 text-xs font-medium">
+                            <span data-i18n="card_stress">MAX STRESS UTILIZATION</span>
+                            <i class="fa-solid fa-gauge-high text-blue-500"></i>
+                        </div>
+                        <div class="mt-2">
+                            <p id="res_stress" class="text-2xl sm:text-3xl font-extrabold text-slate-800">-</p>
+                            <p class="text-[11px] text-slate-400 mt-0.5" data-i18n="sub_stress">Allowable Stress ratio (Max 100%)</p>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex flex-col justify-between">
+                        <div class="flex items-center justify-between text-slate-500 text-xs font-medium">
+                            <span data-i18n="card_deflect">MAX DEFLECTION</span>
+                            <i class="fa-solid fa-ruler-horizontal text-indigo-500"></i>
+                        </div>
+                        <div class="mt-2">
+                            <p id="res_deflection" class="text-2xl sm:text-3xl font-extrabold text-slate-800">-</p>
+                            <p class="text-[11px] text-slate-400 mt-0.5" data-i18n="sub_deflect">Actual max lateral displacement</p>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex flex-col justify-between">
+                        <div class="flex items-center justify-between text-slate-500 text-xs font-medium">
+                            <span data-i18n="card_limit">DEFLECTION LIMIT</span>
+                            <i class="fa-solid fa-shield-halved text-emerald-500"></i>
+                        </div>
+                        <div class="mt-2">
+                            <p id="res_limit" class="text-2xl sm:text-3xl font-extrabold text-slate-800">-</p>
+                            <p class="text-[11px] text-slate-400 mt-0.5" data-i18n="sub_limit">Allowable limit (Post Height / 90)</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chart Elevation Preview Canvas Card -->
+                <div class="bg-white p-4 sm:p-5 rounded-xl shadow-sm border border-slate-200">
+                    <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-2 mb-4 pb-2 border-b border-slate-100">
+                        <h3 class="text-base font-semibold text-slate-800 flex items-center gap-2">
+                            <i class="fa-solid fa-chart-line text-blue-600"></i> <span data-i18n="chart_title">ภาพจำลองรูปด้านโครงสร้าง (Side Elevation Preview)</span>
+                        </h3>
+                        <div class="flex items-center gap-4 text-xs">
+                            <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-emerald-500 inline-block"></span> <span data-i18n="post_pass">เสาผ่าน (Pass)</span></span>
+                            <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-rose-500 inline-block"></span> <span data-i18n="post_fail">เสาไม่ผ่าน (Fail)</span></span>
+                        </div>
+                    </div>
+                    <div class="relative w-full h-72 sm:h-80">
+                        <canvas id="structureChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Detailed Technical Analysis Card -->
+                <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 space-y-4">
+                    <h3 class="text-base font-semibold text-slate-800 border-b border-slate-100 pb-2 flex items-center gap-2">
+                        <i class="fa-solid fa-magnifying-glass-chart text-blue-600"></i> <span data-i18n="detail_title">รายละเอียดการวิเคราะห์โครงสร้าง (Detailed Structural Stress & Deflection Analysis)</span>
+                    </h3>
+
+                    <!-- Utility Table -->
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs border-collapse">
+                            <thead>
+                                <tr class="bg-slate-100 text-slate-700 border-b border-slate-200">
+                                    <th class="p-2.5 font-semibold" data-i18n="tbl_elem">องค์อาคาร (Member Element)</th>
+                                    <th class="p-2.5 font-semibold" data-i18n="tbl_axis">แกนพิจารณา (Axis)</th>
+                                    <th class="p-2.5 font-semibold text-right" data-i18n="tbl_ratio">Stress Ratio (%)</th>
+                                    <th class="p-2.5 font-semibold text-center" data-i18n="tbl_status">สถานะ Stress</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100 text-slate-700">
+                                <tr>
+                                    <td class="p-2.5 font-medium" data-i18n="top_rail">ราวบน (Top Rail)</td>
+                                    <td class="p-2.5 text-slate-500">Strong Axis Bending</td>
+                                    <td class="p-2.5 text-right font-bold" id="tbl_rail_stress">-</td>
+                                    <td class="p-2.5 text-center" id="tbl_rail_status">-</td>
+                                </tr>
+                                <tr>
+                                    <td class="p-2.5 font-medium" data-i18n="post_elem">เสาตั้ง (Post)</td>
+                                    <td class="p-2.5 text-slate-500">Strong Axis Bending</td>
+                                    <td class="p-2.5 text-right font-bold" id="tbl_post_s_stress">-</td>
+                                    <td class="p-2.5 text-center" id="tbl_post_s_status">-</td>
+                                </tr>
+                                <tr>
+                                    <td class="p-2.5 font-medium" data-i18n="post_elem">เสาตั้ง (Post)</td>
+                                    <td class="p-2.5 text-slate-500">Weak Axis Bending</td>
+                                    <td class="p-2.5 text-right font-bold" id="tbl_post_w_stress">-</td>
+                                    <td class="p-2.5 text-center" id="tbl_post_w_status">-</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Deflection Details -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+                        <div class="p-3 rounded-lg bg-slate-50 border border-slate-200">
+                            <span class="text-xs text-slate-500 block">Strong Axis Deflection (&delta;<sub>s</sub>)</span>
+                            <div class="flex items-center justify-between mt-1">
+                                <span id="det_delta_s" class="font-bold text-slate-800 text-sm">-</span>
+                                <span id="badge_delta_s" class="px-2 py-0.5 text-[10px] rounded font-semibold">-</span>
+                            </div>
+                        </div>
+                        <div class="p-3 rounded-lg bg-slate-50 border border-slate-200">
+                            <span class="text-xs text-slate-500 block">Weak Axis Deflection (&delta;<sub>w</sub>)</span>
+                            <div class="flex items-center justify-between mt-1">
+                                <span id="det_delta_w" class="font-bold text-slate-800 text-sm">-</span>
+                                <span id="badge_delta_w" class="px-2 py-0.5 text-[10px] rounded font-semibold">-</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Design Parameters Footnote -->
+                    <div class="text-[11px] text-slate-500 bg-slate-50 p-3 rounded-lg border border-slate-200 space-y-1">
+                        <p class="font-semibold text-slate-700" data-i18n="fn_heading">เกณฑ์อ้างอิงและพารามิเตอร์ที่ใช้คำนวณ:</p>
+                        <p data-i18n="fn_modulus">• E = 2,040,000 kg/cm² (Modulus of Elasticity ของเหล็กรูปพรรณ)</p>
+                        <p data-i18n="fn_stress">• Fb = 0.66 × Fy = 1,617 kg/cm² (หน่วยแรงดัดที่ยอมให้ AISC ASD, Fy=2450 kg/cm²)</p>
+                        <p data-i18n="fn_stiff">• ค่ากระจายแรงลงเสา (df) คำนวณตามอัตราส่วนความแข็งแรงสมบูรณ์ (Frame Stiffness Matrix Ratio)</p>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900 text-slate-400 py-4 text-center text-xs mt-8 no-print border-t border-slate-800">
+        <div class="max-w-7xl mx-auto px-4">
+            <p>Hand Rail Structural Engineering Checker &copy; 2026 by Ardharn. Designed with ASCE7-05 & AISC ASD standard.</p>
+        </div>
+    </footer>
+
+    <!-- JavaScript Logic & Translations -->
+    <script>
+        // Language Dictionary (TH / EN)
+        const i18n = {
+            th: {
+                print_report: "พิมพ์รายงาน",
+                print_title: "รายการคำนวณราวจับบันไดเหล็ก (Handrail Calculation Report)",
+                print_date_label: "วันที่พิมพ์:",
+                cfg_title: "ตัวแปรบันไดและราวจับ",
+                unit_m: "ขนาดเป็นเมตร (m)",
+                sec1_title: "1. ขนาดบันได (Stair Geometry)",
+                riser_h: "ลูกตั้ง Riser (m)",
+                tread_w: "ลูกนอน Tread (m)",
+                total_stairs: "จำนวนขั้น (Steps)",
+                h_post_m: "ความสูงเสา Post (m)",
+                sec2_title: "2. ระยะห่างเสา (Post Spacing)",
+                post_spacing_lbl: "การจัดวางเสาราวจับ",
+                opt_50mm: "ระยะคงที่ @ 50 MM.",
+                opt_100mm: "ระยะคงที่ @ 100 MM.",
+                opt_every1: "ทุกๆ 1 ขั้นบันได (Every 1 Step)",
+                opt_every2: "ทุกๆ 2 ขั้นบันได (Every 2 Steps)",
+                opt_every3: "ทุกๆ 3 ขั้นบันได (Every 3 Steps)",
+                opt_every4: "ทุกๆ 4 ขั้นบันได (Every 4 Steps)",
+                sec3_title: "3. หน้าตัดวัสดุ (Material Sections)",
+                rail_sel: "ราวมือจับ Top Rail",
+                post_sel: "เสาราวจับ Vertical Post",
+                sec4_title: "4. น้ำหนักบรรทุกออกแบบ (ASCE 7-05 Loads)",
+                load_conc: "Concentrated Load",
+                load_line: "Uniform Line Load",
+                btn_calc: "คำนวณผลลัพธ์",
+                loading: "กำลังโหลดข้อมูล...",
+                card_stress: "MAX STRESS UTILIZATION",
+                sub_stress: "Allowable Stress ratio (Max 100%)",
+                card_deflect: "MAX DEFLECTION",
+                sub_deflect: "Actual max lateral displacement",
+                card_limit: "DEFLECTION LIMIT",
+                sub_limit: "Allowable limit (Post Height / 90)",
+                chart_title: "ภาพจำลองรูปด้านโครงสร้าง (Side Elevation Preview)",
+                post_pass: "เสาผ่าน (Pass)",
+                post_fail: "เสาไม่ผ่าน (Fail)",
+                detail_title: "รายละเอียดการวิเคราะห์โครงสร้าง (Detailed Structural Stress & Deflection Analysis)",
+                tbl_elem: "องค์อาคาร (Member Element)",
+                tbl_axis: "แกนพิจารณา (Axis)",
+                tbl_ratio: "Stress Ratio (%)",
+                tbl_status: "สถานะ Stress",
+                top_rail: "ราวบน (Top Rail)",
+                post_elem: "เสาตั้ง (Post)",
+                fn_heading: "เกณฑ์อ้างอิงและพารามิเตอร์ที่ใช้คำนวณ:",
+                fn_modulus: "• E = 2,040,000 kg/cm² (Modulus of Elasticity ของเหล็กรูปพรรณ)",
+                fn_stress: "• Fb = 0.66 × Fy = 1,617 kg/cm² (หน่วยแรงดัดที่ยอมให้ AISC ASD, Fy=2450 kg/cm²)",
+                fn_stiff: "• ค่ากระจายแรงลงเสา (df) คำนวณตามอัตราส่วนความแข็งแรงสมบูรณ์ (Frame Stiffness Matrix Ratio)",
+                pass_msg: "PASS: ราวจับผ่านเกณฑ์การทดสอบทั้งความแข็งแรง (Stress) และการแอ่นตัว (Deflection)",
+                fail_msg: "FAIL: ราวจับไม่ผ่านเกณฑ์ทดสอบ",
+                chart_x: "ระยะทางแนวนอน Horizontal Span (m)",
+                chart_y: "ความสูง Height (m)"
+            },
+            en: {
+                print_report: "Print Report",
+                print_title: "Handrail Structural Calculation Report",
+                print_date_label: "Date Printed:",
+                cfg_title: "Stair & Handrail Parameters",
+                unit_m: "Dimensions in meters (m)",
+                sec1_title: "1. Stair Geometry",
+                riser_h: "Riser Height (m)",
+                tread_w: "Tread Width (m)",
+                total_stairs: "Total Steps",
+                h_post_m: "Post Height (m)",
+                sec2_title: "2. Post Spacing",
+                post_spacing_lbl: "Post Arrangement",
+                opt_50mm: "Fixed Spacing @ 50 MM.",
+                opt_100mm: "Fixed Spacing @ 100 MM.",
+                opt_every1: "Every 1 Step",
+                opt_every2: "Every 2 Steps",
+                opt_every3: "Every 3 Steps",
+                opt_every4: "Every 4 Steps",
+                sec3_title: "3. Material Sections",
+                rail_sel: "Top Rail Profile",
+                post_sel: "Vertical Post Profile",
+                sec4_title: "4. Design Loads (ASCE 7-05)",
+                load_conc: "Concentrated Load",
+                load_line: "Uniform Line Load",
+                btn_calc: "Calculate Results",
+                loading: "Loading data...",
+                card_stress: "MAX STRESS UTILIZATION",
+                sub_stress: "Allowable Stress ratio (Max 100%)",
+                card_deflect: "MAX DEFLECTION",
+                sub_deflect: "Actual max lateral displacement",
+                card_limit: "DEFLECTION LIMIT",
+                sub_limit: "Allowable limit (Post Height / 90)",
+                chart_title: "Side Elevation Preview",
+                post_pass: "Post Pass",
+                post_fail: "Post Fail",
+                detail_title: "Detailed Structural Stress & Deflection Analysis",
+                tbl_elem: "Member Element",
+                tbl_axis: "Considered Axis",
+                tbl_ratio: "Stress Ratio (%)",
+                tbl_status: "Stress Status",
+                top_rail: "Top Rail",
+                post_elem: "Vertical Post",
+                fn_heading: "Design Standards & Reference Parameters:",
+                fn_modulus: "• E = 2,040,000 kg/cm² (Modulus of Elasticity of Structural Steel)",
+                fn_stress: "• Fb = 0.66 × Fy = 1,617 kg/cm² (Allowable Bending Stress AISC ASD, Fy=2450 kg/cm²)",
+                fn_stiff: "• Load Distribution Factor (df) calculated using Frame Stiffness Matrix Ratio",
+                pass_msg: "PASS: Handrail structural members pass both Stress and Deflection limits",
+                fail_msg: "FAIL: Handrail structure failed structural check",
+                chart_x: "Horizontal Span (m)",
+                chart_y: "Height (m)"
+            }
+        };
+
+        let currentLang = 'th';
+
+        function toggleLanguage() {
+            currentLang = currentLang === 'th' ? 'en' : 'th';
+            document.getElementById("lang_toggle_btn").innerText = currentLang === 'th' ? '🌐 TH | EN' : '🌐 EN | TH';
+            
+            // Update UI elements with data-i18n attribute
+            document.querySelectorAll("[data-i18n]").forEach(el => {
+                const key = el.getAttribute("data-i18n");
+                if (i18n[currentLang][key]) {
+                    el.innerText = i18n[currentLang][key];
+                }
+            });
+
+            // Re-render calculation and chart with new language
+            calculateAndRender();
+        }
+
+        // Material Database with section properties calculation inputs
+        const materials = {
+            "Flat 50x6": { type: "flat", b: 0.6, h: 5.0 },
+            "Flat 50x9": { type: "flat", b: 0.9, h: 5.0 },
+            "Flat 50x12": { type: "flat", b: 1.2, h: 5.0 },
+            "Flat 50x16": { type: "flat", b: 1.6, h: 5.0 },
+            "Square Tube 32x2.3": { type: "box", D: 3.2, t: 0.23 },
+            "Square Tube 38x2.3": { type: "box", D: 3.8, t: 0.23 },
+            "Square Tube 50x2.3": { type: "box", D: 5.0, t: 0.23 },
+            "Square Tube 50x3.2": { type: "box", D: 5.0, t: 0.32 },
+            "Pipe 27.2x2.3": { type: "pipe", OD: 2.72, t: 0.23 },
+            "Pipe 34.0x2.3": { type: "pipe", OD: 3.40, t: 0.23 },
+            "Pipe 42.7x2.3": { type: "pipe", OD: 4.27, t: 0.23 },
+            "Pipe 42.7x3.2": { type: "pipe", OD: 4.27, t: 0.32 },
+            "Pipe 48.6x2.3": { type: "pipe", OD: 4.86, t: 0.23 },
+            "Pipe 48.6x3.2": { type: "pipe", OD: 4.86, t: 0.32 }
+        };
+
+        // Populate Dropdowns
+        const railSel = document.getElementById("rail_sel");
+        const postSel = document.getElementById("post_sel");
+
+        Object.keys(materials).forEach((name) => {
+            railSel.add(new Option(name, name, false, name === "Pipe 42.7x2.3"));
+            postSel.add(new Option(name, name, false, name === "Pipe 42.7x3.2"));
+        });
+
+        let myChart = null;
+
+        // Calculate Section Modulus (S) and Moment of Inertia (I) in cm^3 and cm^4
+        function getProps(name) {
+            const m = materials[name];
+            if (!m) return { s_s: 1, s_w: 1, i_s: 1, i_w: 1 };
+
+            if (m.type === "flat") {
+                const s_s = (m.b * (m.h ** 2)) / 6;
+                const s_w = (m.h * (m.b ** 2)) / 6;
+                const i_s = (m.b * (m.h ** 3)) / 12;
+                const i_w = (m.h * (m.b ** 3)) / 12;
+                return { s_s, s_w, i_s, i_w };
+            } else if (m.type === "box") {
+                const innerD = Math.max(0, m.D - 2 * m.t);
+                const i = (Math.pow(m.D, 4) - Math.pow(innerD, 4)) / 12;
+                const s = i / (m.D / 2);
+                return { s_s: s, s_w: s, i_s: i, i_w: i };
+            } else if (m.type === "pipe") {
+                const innerD = Math.max(0, m.OD - 2 * m.t);
+                const i = (Math.PI * (Math.pow(m.OD, 4) - Math.pow(innerD, 4))) / 64;
+                const s = i / (m.OD / 2);
+                return { s_s: s, s_w: s, i_s: i, i_w: i };
+            }
+        }
+
+        // Structural Calculation & UI Rendering
+        function calculateAndRender() {
+            const riser_h = parseFloat(document.getElementById("riser_h").value) || 0.18;
+            const tread_w = parseFloat(document.getElementById("tread_w").value) || 0.25;
+            const total_stairs = parseInt(document.getElementById("total_stairs").value) || 9;
+            const h_post_m = parseFloat(document.getElementById("h_post_m").value) || 0.90;
+            
+            const raw_spacing = parseFloat(document.getElementById("post_spacing").value);
+            let post_every_n = raw_spacing;
+            if (raw_spacing < 1) {
+                post_every_n = raw_spacing / tread_w;
+            }
+
+            const railName = railSel.value;
+            const postName = postSel.value;
+
+            const railProps = getProps(railName);
+            const postProps = getProps(postName);
+
+            const L_cm = (tread_w * post_every_n) * 100;
+            const H_cm = h_post_m * 100;
+
+            const E = 2.04e6; // Modulus of Elasticity kg/cm^2
+            const Fb = 2450.0 * 0.66; // Allowable Bending Stress (kg/cm^2) = 1617 kg/cm^2
+            const deflect_limit = H_cm / 90; // Deflection Limit H/90
+
+            let df = 0.5;
+            if (post_every_n > 0) {
+                const k_post = (3 * E * postProps.i_s) / Math.pow(H_cm, 3);
+                const k_rail = (6 * E * railProps.i_s) / Math.pow(L_cm, 3);
+                df = k_post / (k_post + (k_rail * 2 * k_post) / (2 * k_post + k_rail));
+                if (isNaN(df) || df > 1) df = 1;
+                if (df < 0.2) df = 0.2;
+            }
+
+            // ASCE 7-05 Loads
+            const P_eff = 91.0 * df; 
+            const delta_s = (P_eff * Math.pow(H_cm, 3)) / (3 * E * postProps.i_s);
+
+            const W_line = 75.0 / 100; 
+            const R_top = W_line * L_cm; 
+            const delta_w = (R_top * Math.pow(H_cm, 3)) / (3 * E * postProps.i_w);
+
+            const M_rail = (91.0 * L_cm) / 4; 
+            const ratio_rail = (M_rail / railProps.s_s / Fb) * 100;
+
+            const M_post_s = P_eff * H_cm;
+            const ratio_post_s = (M_post_s / postProps.s_s / Fb) * 100;
+
+            const M_post_w = R_top * H_cm;
+            const ratio_post_w = (M_post_w / postProps.s_w / Fb) * 100;
+
+            const max_util = Math.max(ratio_rail, ratio_post_s, ratio_post_w);
+            const max_deflect = Math.max(delta_s, delta_w);
+            const deflect_pass = (delta_s <= deflect_limit) && (delta_w <= deflect_limit);
+            const stress_pass = max_util <= 100;
+            const is_overall_pass = stress_pass && deflect_pass;
+
+            // Render UI Metric Cards
+            document.getElementById("res_stress").innerText = max_util.toFixed(1) + "%";
+            document.getElementById("res_stress").className = `text-2xl sm:text-3xl font-extrabold ${stress_pass ? 'text-emerald-600' : 'text-rose-600'}`;
+
+            document.getElementById("res_deflection").innerText = max_deflect.toFixed(2) + " cm";
+            document.getElementById("res_deflection").className = `text-2xl sm:text-3xl font-extrabold ${deflect_pass ? 'text-emerald-600' : 'text-rose-600'}`;
+
+            document.getElementById("res_limit").innerText = deflect_limit.toFixed(2) + " cm";
+
+            // Status Banner Update
+            const banner = document.getElementById("status_banner");
+            const statusIcon = document.getElementById("status_icon");
+            const statusText = document.getElementById("status_text");
+
+            if (is_overall_pass) {
+                banner.className = "p-4 rounded-xl shadow-sm text-center font-bold text-base sm:text-lg transition-all duration-300 flex items-center justify-center gap-3 bg-emerald-500 text-white";
+                statusIcon.className = "fa-solid fa-circle-check text-2xl";
+                statusText.innerText = i18n[currentLang].pass_msg;
+            } else {
+                banner.className = "p-4 rounded-xl shadow-sm text-center font-bold text-base sm:text-lg transition-all duration-300 flex items-center justify-center gap-3 bg-rose-500 text-white";
+                statusIcon.className = "fa-solid fa-triangle-exclamation text-2xl";
+                let reason = [];
+                if (!stress_pass) reason.push("Overstress > 100%");
+                if (!deflect_pass) reason.push("Excessive Deflection > Limit");
+                statusText.innerText = `${i18n[currentLang].fail_msg} (${reason.join(", ")})`;
+            }
+
+            // Update Detailed Breakdown Table & Indicators
+            document.getElementById("tbl_rail_stress").innerText = ratio_rail.toFixed(1) + "%";
+            document.getElementById("tbl_rail_status").innerHTML = ratio_rail <= 100 
+                ? '<span class="px-2 py-0.5 text-xs rounded font-bold bg-emerald-100 text-emerald-800">PASS</span>'
+                : '<span class="px-2 py-0.5 text-xs rounded font-bold bg-rose-100 text-rose-800">FAIL</span>';
+
+            document.getElementById("tbl_post_s_stress").innerText = ratio_post_s.toFixed(1) + "%";
+            document.getElementById("tbl_post_s_status").innerHTML = ratio_post_s <= 100 
+                ? '<span class="px-2 py-0.5 text-xs rounded font-bold bg-emerald-100 text-emerald-800">PASS</span>'
+                : '<span class="px-2 py-0.5 text-xs rounded font-bold bg-rose-100 text-rose-800">FAIL</span>';
+
+            document.getElementById("tbl_post_w_stress").innerText = ratio_post_w.toFixed(1) + "%";
+            document.getElementById("tbl_post_w_status").innerHTML = ratio_post_w <= 100 
+                ? '<span class="px-2 py-0.5 text-xs rounded font-bold bg-emerald-100 text-emerald-800">PASS</span>'
+                : '<span class="px-2 py-0.5 text-xs rounded font-bold bg-rose-100 text-rose-800">FAIL</span>';
+
+            document.getElementById("det_delta_s").innerText = delta_s.toFixed(2) + " cm";
+            document.getElementById("badge_delta_s").innerText = delta_s <= deflect_limit ? "PASS" : "FAIL";
+            document.getElementById("badge_delta_s").className = delta_s <= deflect_limit 
+                ? "px-2 py-0.5 text-[10px] rounded font-bold bg-emerald-100 text-emerald-800" 
+                : "px-2 py-0.5 text-[10px] rounded font-bold bg-rose-100 text-rose-800";
+
+            document.getElementById("det_delta_w").innerText = delta_w.toFixed(2) + " cm";
+            document.getElementById("badge_delta_w").innerText = delta_w <= deflect_limit ? "PASS" : "FAIL";
+            document.getElementById("badge_delta_w").className = delta_w <= deflect_limit 
+                ? "px-2 py-0.5 text-[10px] rounded font-bold bg-emerald-100 text-emerald-800" 
+                : "px-2 py-0.5 text-[10px] rounded font-bold bg-rose-100 text-rose-800";
+
+            // Print Date Stamp
+            document.getElementById("print_date").innerText = new Date().toLocaleString(currentLang === 'th' ? 'th-TH' : 'en-US');
+
+            // Render Visual Chart Elevation
+            renderChart(total_stairs, tread_w, riser_h, h_post_m, post_every_n, is_overall_pass);
+        }
+
+        // Render Side Elevation Chart with Chart.js
+        function renderChart(total_stairs, tread_w, riser_h, h_post_m, post_every_n, isPass) {
+            let stairPoints = [];
+            for (let i = 0; i <= total_stairs; i++) {
+                stairPoints.push({ x: i * tread_w, y: i * riser_h });
+            }
+
+            let post_locations = [];
+            let current_pos = 0.5;
+            if (post_every_n < 1) {
+                let current_x = 0.1;
+                const total_length = total_stairs * tread_w;
+                const step_x = post_every_n * tread_w;
+                while (current_x <= total_length) {
+                    post_locations.push(current_x / tread_w);
+                    current_x += step_x;
+                }
+            } else {
+                while (current_pos < total_stairs) {
+                    post_locations.push(current_pos);
+                    current_pos += post_every_n;
+                }
+            }
+
+            let last_step_pos = total_stairs - 0.5;
+            if (post_locations.length === 0 || post_locations[post_locations.length - 1] < last_step_pos) {
+                post_locations.push(last_step_pos);
+            }
+
+            const postLineColor = isPass ? '#10b981' : '#f43f5e';
+            let postDatasets = post_locations.map(s => {
+                let px = s * tread_w;
+                let py = Math.floor(s) * riser_h;
+                return {
+                    type: 'line',
+                    data: [{ x: px, y: py }, { x: px, y: py + h_post_m }],
+                    borderColor: postLineColor,
+                    borderWidth: 4,
+                    pointRadius: 0,
+                    showLine: true
+                };
+            });
+
+            let first_x = post_locations[0] * tread_w;
+            let first_y = Math.floor(post_locations[0]) * riser_h + h_post_m;
+            let last_x = post_locations[post_locations.length - 1] * tread_w;
+            let last_y = Math.floor(post_locations[post_locations.length - 1]) * riser_h + h_post_m;
+
+            let railDataset = {
+                type: 'line',
+                data: [{ x: first_x, y: first_y }, { x: last_x, y: last_y }],
+                borderColor: '#2563eb',
+                borderWidth: 6,
+                pointRadius: 0,
+                showLine: true
+            };
+
+            let stairDataset = {
+                type: 'line',
+                data: stairPoints,
+                borderColor: '#334155',
+                borderWidth: 3,
+                stepped: 'before',
+                pointRadius: 0,
+                showLine: true
+            };
+
+            if (myChart) myChart.destroy();
+            const ctx = document.getElementById('structureChart').getContext('2d');
+            
+            myChart = new Chart(ctx, {
+                data: {
+                    datasets: [stairDataset, railDataset, ...postDatasets]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    animation: { duration: 300 },
+                    scales: {
+                        x: {
+                            type: 'linear',
+                            position: 'bottom',
+                            title: { display: true, text: i18n[currentLang].chart_x, font: { family: 'Kanit, Inter', size: 12 } },
+                            grid: { color: '#f1f5f9' }
+                        },
+                        y: {
+                            title: { display: true, text: i18n[currentLang].chart_y, font: { family: 'Kanit, Inter', size: 12 } },
+                            grid: { color: '#f1f5f9' },
+                            beginAtZero: true
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `X: ${context.parsed.x.toFixed(2)} m, Y: ${context.parsed.y.toFixed(2)} m`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Attach Dynamic Event Listeners to all Form Inputs
+        window.onload = function () {
+            const inputs = document.querySelectorAll("input, select");
+            inputs.forEach(input => {
+                input.addEventListener("input", calculateAndRender);
+                input.addEventListener("change", calculateAndRender);
+            });
+
+            // Initial Calculation
+            calculateAndRender();
+        };
+    </script>
+</body>
+</html>
