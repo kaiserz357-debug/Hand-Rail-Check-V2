@@ -6,7 +6,7 @@
     <title>Hand Rail Check by Ardharn ver01 2026 (ASCE 7-05 / AISC ASD)</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Chart.js for Structural Visualization (โหลดไว้ที่ Head ให้โหลดเสร็จก่อน) -->
+    <!-- Chart.js for Structural Visualization -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -65,7 +65,7 @@
     <!-- Main Container -->
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-grow w-full">
         
-        <!-- Print Header (Visible only when printing) -->
+        <!-- Print Header -->
         <div class="hidden print-only mb-6 pb-4 border-b">
             <h1 class="text-2xl font-bold text-gray-900" data-i18n="print_title">รายการคำนวณราวจับบันไดเหล็ก (Handrail Calculation Report)</h1>
             <p class="text-xs text-gray-500">Design Code: ASCE 7-05 / AISC ASD (Steel Construction Manual)</p>
@@ -74,10 +74,8 @@
 
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
 
-            <!-- Sidebar Controls / Input Panel (4 Cols on Desktop) -->
+            <!-- Sidebar Controls / Input Panel -->
             <div class="lg:col-span-4 space-y-5 no-print">
-                
-                <!-- Input Configuration Form -->
                 <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 space-y-4">
                     <div class="flex items-center justify-between border-b border-slate-100 pb-3">
                         <h2 class="text-base font-semibold text-slate-800 flex items-center gap-2">
@@ -168,7 +166,7 @@
                 </div>
             </div>
 
-            <!-- Main Results & Chart Section (8 Cols on Desktop) -->
+            <!-- Main Results & Chart Section -->
             <div class="lg:col-span-8 space-y-5">
                 
                 <!-- Status Banner -->
@@ -211,6 +209,16 @@
                             <p class="text-[11px] text-slate-400 mt-0.5" data-i18n="sub_limit">Allowable limit (Post Height / 90)</p>
                         </div>
                     </div>
+                </div>
+
+                <!-- Functional & Regulatory Compliance Details Card -->
+                <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 space-y-3">
+                    <h3 class="text-base font-semibold text-slate-800 border-b border-slate-100 pb-2 flex items-center gap-2">
+                        <i class="fa-solid fa-file-contract text-blue-600"></i> <span data-i18n="func_title">รายละเอียดการใช้งานตามข้อกำหนด (Functional Compliance)</span>
+                    </h3>
+                    <ul id="compliance_list" class="space-y-2 text-xs sm:text-sm text-slate-700">
+                        <!-- Dynamically generated compliance checks -->
+                    </ul>
                 </div>
 
                 <!-- Chart Elevation Preview Canvas Card -->
@@ -292,7 +300,7 @@
                         <p class="font-semibold text-slate-700" data-i18n="fn_heading">เกณฑ์อ้างอิงและพารามิเตอร์ที่ใช้คำนวณ:</p>
                         <p data-i18n="fn_modulus">• E = 2,040,000 kg/cm² (Modulus of Elasticity ของเหล็กรูปพรรณ)</p>
                         <p data-i18n="fn_stress">• Fb = 0.66 × Fy = 1,617 kg/cm² (หน่วยแรงดัดที่ยอมให้ AISC ASD, Fy=2450 kg/cm²)</p>
-                        <p data-i18n="fn_stiff">• ค่ากระจายแรงลงเสา (df) คำนวณตามอัตราส่วนความแข็งแรงสมบูรณ์ (Frame Stiffness Matrix Ratio)</p>
+                        <p data-i18n="fn_weak_deflect">• Weak Axis Deflection (Restrained Frame Model): &delta;<sub>w</sub> = (P H³ / 12 E I<sub>w</sub>) × [(6x + 4y) / (6x + 1y)] โดย x = I<sub>rail,w</sub> / I<sub>post,w</sub>, y = L / H</p>
                     </div>
 
                 </div>
@@ -312,7 +320,6 @@
 
     <!-- JavaScript Logic & Translations -->
     <script>
-        // Language Dictionary (TH / EN)
         const i18n = {
             th: {
                 print_report: "พิมพ์รายงาน",
@@ -347,6 +354,7 @@
                 sub_deflect: "Actual max lateral displacement",
                 card_limit: "DEFLECTION LIMIT",
                 sub_limit: "Allowable limit (Post Height / 90)",
+                func_title: "รายละเอียดการใช้งานตามข้อกำหนด (Functional Compliance)",
                 chart_title: "ภาพจำลองรูปด้านโครงสร้าง (Side Elevation Preview)",
                 post_pass: "เสาผ่าน (Pass)",
                 post_fail: "เสาไม่ผ่าน (Fail)",
@@ -360,7 +368,7 @@
                 fn_heading: "เกณฑ์อ้างอิงและพารามิเตอร์ที่ใช้คำนวณ:",
                 fn_modulus: "• E = 2,040,000 kg/cm² (Modulus of Elasticity ของเหล็กรูปพรรณ)",
                 fn_stress: "• Fb = 0.66 × Fy = 1,617 kg/cm² (หน่วยแรงดัดที่ยอมให้ AISC ASD, Fy=2450 kg/cm²)",
-                fn_stiff: "• ค่ากระจายแรงลงเสา (df) คำนวณตามอัตราส่วนความแข็งแรงสมบูรณ์ (Frame Stiffness Matrix Ratio)",
+                fn_weak_deflect: "• Weak Axis Deflection (Restrained Frame Model): &delta;<sub>w</sub> = (P H³ / 12 E I<sub>w</sub>) × [(6x + 4y) / (6x + 1y)] โดย x = I<sub>rail,w</sub> / I<sub>post,w</sub>, y = L / H",
                 pass_msg: "PASS: ราวจับผ่านเกณฑ์การทดสอบทั้งความแข็งแรง (Stress) และการแอ่นตัว (Deflection)",
                 fail_msg: "FAIL: ราวจับไม่ผ่านเกณฑ์ทดสอบ",
                 chart_x: "ระยะทางแนวนอน Horizontal Span (m)",
@@ -399,6 +407,7 @@
                 sub_deflect: "Actual max lateral displacement",
                 card_limit: "DEFLECTION LIMIT",
                 sub_limit: "Allowable limit (Post Height / 90)",
+                func_title: "Functional & Regulatory Compliance Details",
                 chart_title: "Side Elevation Preview",
                 post_pass: "Post Pass",
                 post_fail: "Post Fail",
@@ -412,7 +421,7 @@
                 fn_heading: "Design Standards & Reference Parameters:",
                 fn_modulus: "• E = 2,040,000 kg/cm² (Modulus of Elasticity of Structural Steel)",
                 fn_stress: "• Fb = 0.66 × Fy = 1,617 kg/cm² (Allowable Bending Stress AISC ASD, Fy=2450 kg/cm²)",
-                fn_stiff: "• Load Distribution Factor (df) calculated using Frame Stiffness Matrix Ratio",
+                fn_weak_deflect: "• Weak Axis Deflection (Restrained Frame Model): &delta;<sub>w</sub> = (P H³ / 12 E I<sub>w</sub>) × [(6x + 4y) / (6x + 1y)] where x = I<sub>rail,w</sub> / I<sub>post,w</sub>, y = L / H",
                 pass_msg: "PASS: Handrail structural members pass both Stress and Deflection limits",
                 fail_msg: "FAIL: Handrail structure failed structural check",
                 chart_x: "Horizontal Span (m)",
@@ -426,19 +435,17 @@
             currentLang = currentLang === 'th' ? 'en' : 'th';
             document.getElementById("lang_toggle_btn").innerText = currentLang === 'th' ? '🌐 TH | EN' : '🌐 EN | TH';
             
-            // Update UI elements with data-i18n attribute
             document.querySelectorAll("[data-i18n]").forEach(el => {
                 const key = el.getAttribute("data-i18n");
                 if (i18n[currentLang][key]) {
-                    el.innerText = i18n[currentLang][key];
+                    el.innerHTML = i18n[currentLang][key];
                 }
             });
 
-            // Re-render calculation and chart with new language
             calculateAndRender();
         }
 
-        // Material Database with section properties calculation inputs
+        // Material Database
         const materials = {
             "Flat 50x6": { type: "flat", b: 0.6, h: 5.0 },
             "Flat 50x9": { type: "flat", b: 0.9, h: 5.0 },
@@ -456,7 +463,6 @@
             "Pipe 48.6x3.2": { type: "pipe", OD: 4.86, t: 0.32 }
         };
 
-        // Populate Dropdowns
         const railSel = document.getElementById("rail_sel");
         const postSel = document.getElementById("post_sel");
 
@@ -467,7 +473,6 @@
 
         let myChart = null;
 
-        // Calculate Section Modulus (S) and Moment of Inertia (I) in cm^3 and cm^4
         function getProps(name) {
             const m = materials[name];
             if (!m) return { s_s: 1, s_w: 1, i_s: 1, i_w: 1 };
@@ -514,26 +519,38 @@
             const H_cm = h_post_m * 100;
 
             const E = 2.04e6; // Modulus of Elasticity kg/cm^2
-            const Fb = 2450.0 * 0.66; // Allowable Bending Stress (kg/cm^2) = 1617 kg/cm^2
+            const Fb = 2450.0 * 0.66; // Allowable Bending Stress = 1617 kg/cm^2
             const deflect_limit = H_cm / 90; // Deflection Limit H/90
 
-            let df = 0.5;
-            if (post_every_n > 0) {
-                const k_post = (3 * E * postProps.i_s) / Math.pow(H_cm, 3);
-                const k_rail = (6 * E * railProps.i_s) / Math.pow(L_cm, 3);
-                df = k_post / (k_post + (k_rail * 2 * k_post) / (2 * k_post + k_rail));
-                if (isNaN(df) || df > 1) df = 1;
-                if (df < 0.2) df = 0.2;
+            // --- Load Sharing (Strong Axis Concentrated Load) ---
+            let P_eff = 91.0;
+            if (raw_spacing < 1) {
+                const num_posts_in_1m = Math.max(1, Math.floor(1.0 / raw_spacing));
+                P_eff = 91.0 / num_posts_in_1m;
+            } else {
+                let df = 0.5;
+                if (post_every_n > 0) {
+                    const k_post = (3 * E * postProps.i_s) / Math.pow(H_cm, 3);
+                    const k_rail = (6 * E * railProps.i_s) / Math.pow(L_cm, 3);
+                    df = k_post / (k_post + (k_rail * 2 * k_post) / (2 * k_post + k_rail));
+                    if (isNaN(df) || df > 1) df = 1;
+                    if (df < 0.2) df = 0.2;
+                }
+                P_eff = 91.0 * df;
             }
 
-            // ASCE 7-05 Loads
-            const P_eff = 91.0 * df; 
+            // Strong Axis Deflection
             const delta_s = (P_eff * Math.pow(H_cm, 3)) / (3 * E * postProps.i_s);
 
+            // --- Weak Axis Deflection (PH^3 / 12EI * [(6x + 4y)/(6x + 1y)]) ---
             const W_line = 75.0 / 100; 
             const R_top = W_line * L_cm; 
-            const delta_w = (R_top * Math.pow(H_cm, 3)) / (3 * E * postProps.i_w);
+            const x_ratio = railProps.i_w / postProps.i_w; // x = I_rail / I_post
+            const y_ratio = L_cm / H_cm;                 // y = L / H
+            const factor = (6 * x_ratio + 4 * y_ratio) / (6 * x_ratio + 1 * y_ratio);
+            const delta_w = ((R_top * Math.pow(H_cm, 3)) / (12 * E * postProps.i_w)) * factor;
 
+            // Bending Stresses & Ratios
             const M_rail = (91.0 * L_cm) / 4; 
             const ratio_rail = (M_rail / railProps.s_s / Fb) * 100;
 
@@ -549,7 +566,47 @@
             const stress_pass = max_util <= 100;
             const is_overall_pass = stress_pass && deflect_pass;
 
-            // Render UI Metric Cards
+            // --- Render Functional & Regulatory Compliance List ---
+            const complianceListEl = document.getElementById("compliance_list");
+            let complianceHTML = "";
+
+            // Condition 1: Height >= 0.9 m
+            if (h_post_m >= 0.9) {
+                complianceHTML += `<li class="flex items-start gap-2 bg-emerald-50 text-emerald-900 p-2.5 rounded border border-emerald-200">
+                    <i class="fa-solid fa-circle-check text-emerald-600 mt-0.5"></i>
+                    <span>ความสูงเสา (${h_post_m.toFixed(2)} ม.) ตั้งแต่ 0.9 ม. ขึ้นไป: <strong>เป็นไปตามข้อบัญญัติกรุงเทพมหานคร เรื่อง ควบคุมอาคาร พ.ศ. 2544 ข้อ 41</strong></span>
+                </li>`;
+            } else {
+                complianceHTML += `<li class="flex items-start gap-2 bg-rose-50 text-rose-900 p-2.5 rounded border border-rose-200">
+                    <i class="fa-solid fa-triangle-exclamation text-rose-600 mt-0.5"></i>
+                    <span>ความสูงเสา (${h_post_m.toFixed(2)} ม.) ต่ำกว่า 0.9 ม.: <strong>ไม่เป็นไปตามข้อบัญญัติกรุงเทพมหานคร เรื่อง ควบคุมอาคาร พ.ศ. 2544 ข้อ 41</strong> (ความสูงขั้นต่ำต้องไม่น้อยกว่า 0.90 ม.)</span>
+                </li>`;
+            }
+
+            // Condition 2: Top Rail is Pipe with diameter 30-40 mm (3.0 to 4.0 cm) -> อัปเดต Wording เต็มตามกฎกระทรวง ฉบับที่ 2 (พ.ศ. 2564)
+            const railMat = materials[railName];
+            if (railMat && railMat.type === 'pipe') {
+                const dia_mm = railMat.OD * 10; // แปลง cm เป็น mm
+                if (dia_mm >= 30 && dia_mm <= 40) {
+                    complianceHTML += `<li class="flex items-start gap-2 bg-emerald-50 text-emerald-900 p-2.5 rounded border border-emerald-200">
+                        <i class="fa-solid fa-circle-check text-emerald-600 mt-0.5"></i>
+                        <span>ราวมือจับเป็นท่อกลม (Pipe) ขนาดเส้นผ่านศูนย์กลาง ${dia_mm.toFixed(1)} มม. (อยู่ในช่วง 30-40 มม.): <strong>เป็นไปตามมาตรฐานกฎกระทรวงกำหนดสิ่งอำนวยความสะดวกในอาคารสำหรับผู้พิการหรือทุพพลภาพ และคนชรา (ฉบับที่ 2) พ.ศ. 2564</strong></span>
+                    </li>`;
+                } else {
+                    complianceHTML += `<li class="flex items-start gap-2 bg-slate-50 text-slate-700 p-2.5 rounded border border-slate-200">
+                        <i class="fa-solid fa-circle-info text-blue-600 mt-0.5"></i>
+                        <span>ราวมือจับหน้าตัด <strong>${railName}</strong> (${dia_mm.toFixed(1)} มม.): ไม่อยู่ในช่วงขนาด 30-40 มม. (สำหรับข้อกำหนดผู้พิการหรือทุพพลภาพ และคนชรา (ฉบับที่ 2) พ.ศ. 2564))</span>
+                    </li>`;
+                }
+            } else {
+                complianceHTML += `<li class="flex items-start gap-2 bg-slate-50 text-slate-700 p-2.5 rounded border border-slate-200">
+                    <i class="fa-solid fa-circle-info text-blue-600 mt-0.5"></i>
+                    <span>ราวมือจับหน้าตัด <strong>${railName}</strong>: ไม่ใช่ท่อกลม (Pipe) ขนาด 30-40 มม. (สำหรับข้อกำหนดผู้พิการหรือทุพพลภาพ และคนชรา (ฉบับที่ 2) พ.ศ. 2564)</span>
+                </li>`;
+            }
+            complianceListEl.innerHTML = complianceHTML;
+
+            // Render Metrics Cards
             document.getElementById("res_stress").innerText = max_util.toFixed(1) + "%";
             document.getElementById("res_stress").className = `text-2xl sm:text-3xl font-extrabold ${stress_pass ? 'text-emerald-600' : 'text-rose-600'}`;
 
@@ -576,7 +633,7 @@
                 statusText.innerText = `${i18n[currentLang].fail_msg} (${reason.join(", ")})`;
             }
 
-            // Update Detailed Breakdown Table & Indicators
+            // Update Detailed Breakdown Table
             document.getElementById("tbl_rail_stress").innerText = ratio_rail.toFixed(1) + "%";
             document.getElementById("tbl_rail_status").innerHTML = ratio_rail <= 100 
                 ? '<span class="px-2 py-0.5 text-xs rounded font-bold bg-emerald-100 text-emerald-800">PASS</span>'
@@ -604,14 +661,12 @@
                 ? "px-2 py-0.5 text-[10px] rounded font-bold bg-emerald-100 text-emerald-800" 
                 : "px-2 py-0.5 text-[10px] rounded font-bold bg-rose-100 text-rose-800";
 
-            // Print Date Stamp
             document.getElementById("print_date").innerText = new Date().toLocaleString(currentLang === 'th' ? 'th-TH' : 'en-US');
 
-            // Render Visual Chart Elevation
             renderChart(total_stairs, tread_w, riser_h, h_post_m, post_every_n, is_overall_pass);
         }
 
-        // Render Side Elevation Chart with Chart.js
+        // Render Side Elevation Chart
         function renderChart(total_stairs, tread_w, riser_h, h_post_m, post_every_n, isPass) {
             let stairPoints = [];
             for (let i = 0; i <= total_stairs; i++) {
@@ -619,9 +674,8 @@
             }
 
             let post_locations = [];
-            let current_pos = 0.5;
             if (post_every_n < 1) {
-                let current_x = 0.1;
+                let current_x = 0.05;
                 const total_length = total_stairs * tread_w;
                 const step_x = post_every_n * tread_w;
                 while (current_x <= total_length) {
@@ -629,15 +683,15 @@
                     current_x += step_x;
                 }
             } else {
+                let current_pos = 0.5;
                 while (current_pos < total_stairs) {
                     post_locations.push(current_pos);
                     current_pos += post_every_n;
                 }
-            }
-
-            let last_step_pos = total_stairs - 0.5;
-            if (post_locations.length === 0 || post_locations[post_locations.length - 1] < last_step_pos) {
-                post_locations.push(last_step_pos);
+                let last_step_pos = total_stairs - 0.5;
+                if (post_locations.length === 0 || post_locations[post_locations.length - 1] < last_step_pos) {
+                    post_locations.push(last_step_pos);
+                }
             }
 
             const postLineColor = isPass ? '#10b981' : '#f43f5e';
@@ -648,7 +702,7 @@
                     type: 'line',
                     data: [{ x: px, y: py }, { x: px, y: py + h_post_m }],
                     borderColor: postLineColor,
-                    borderWidth: 4,
+                    borderWidth: post_every_n < 0.5 ? 2 : 4,
                     pointRadius: 0,
                     showLine: true
                 };
@@ -716,7 +770,7 @@
             });
         }
 
-        // Attach Dynamic Event Listeners to all Form Inputs
+        // Attach Dynamic Event Listeners
         window.onload = function () {
             const inputs = document.querySelectorAll("input, select");
             inputs.forEach(input => {
@@ -724,7 +778,6 @@
                 input.addEventListener("change", calculateAndRender);
             });
 
-            // Initial Calculation
             calculateAndRender();
         };
     </script>
