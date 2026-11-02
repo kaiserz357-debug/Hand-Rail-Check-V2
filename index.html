@@ -583,7 +583,7 @@
                 </li>`;
             }
 
-            // Condition 2: Top Rail is Pipe with diameter 30-40 mm (3.0 to 4.0 cm) -> อัปเดต Wording เต็มตามกฎกระทรวง ฉบับที่ 2 (พ.ศ. 2564)
+            // Condition 2: Top Rail Pipe Diameter (30-40 mm Check with Color Highlighting)
             const railMat = materials[railName];
             if (railMat && railMat.type === 'pipe') {
                 const dia_mm = railMat.OD * 10; // แปลง cm เป็น mm
@@ -593,17 +593,62 @@
                         <span>ราวมือจับเป็นท่อกลม (Pipe) ขนาดเส้นผ่านศูนย์กลาง ${dia_mm.toFixed(1)} มม. (อยู่ในช่วง 30-40 มม.): <strong>เป็นไปตามมาตรฐานกฎกระทรวงกำหนดสิ่งอำนวยความสะดวกในอาคารสำหรับผู้พิการหรือทุพพลภาพ และคนชรา (ฉบับที่ 2) พ.ศ. 2564</strong></span>
                     </li>`;
                 } else {
-                    complianceHTML += `<li class="flex items-start gap-2 bg-slate-50 text-slate-700 p-2.5 rounded border border-slate-200">
-                        <i class="fa-solid fa-circle-info text-blue-600 mt-0.5"></i>
-                        <span>ราวมือจับหน้าตัด <strong>${railName}</strong> (${dia_mm.toFixed(1)} มม.): ไม่อยู่ในช่วงขนาด 30-40 มม. (สำหรับข้อกำหนดผู้พิการหรือทุพพลภาพ และคนชรา (ฉบับที่ 2) พ.ศ. 2564))</span>
+                    complianceHTML += `<li class="flex items-start gap-2 bg-rose-50 text-rose-900 p-2.5 rounded border border-rose-200">
+                        <i class="fa-solid fa-xmark text-rose-600 text-base font-bold mt-0.5"></i>
+                        <span>ราวมือจับหน้าตัด <strong>${railName}</strong> (${dia_mm.toFixed(1)} มม.): <strong>ไม่อยู่ในช่วงขนาด 30-40 มม.</strong> (สำหรับข้อกำหนดผู้พิการหรือทุพพลภาพ และคนชรา (ฉบับที่ 2) พ.ศ. 2564)</span>
                     </li>`;
                 }
             } else {
-                complianceHTML += `<li class="flex items-start gap-2 bg-slate-50 text-slate-700 p-2.5 rounded border border-slate-200">
-                    <i class="fa-solid fa-circle-info text-blue-600 mt-0.5"></i>
-                    <span>ราวมือจับหน้าตัด <strong>${railName}</strong>: ไม่ใช่ท่อกลม (Pipe) ขนาด 30-40 มม. (สำหรับข้อกำหนดผู้พิการหรือทุพพลภาพ และคนชรา (ฉบับที่ 2) พ.ศ. 2564)</span>
+                complianceHTML += `<li class="flex items-start gap-2 bg-rose-50 text-rose-900 p-2.5 rounded border border-rose-200">
+                    <i class="fa-solid fa-xmark text-rose-600 text-base font-bold mt-0.5"></i>
+                    <span>ราวมือจับหน้าตัด <strong>${railName}</strong>: <strong>ไม่เป็นไปตามข้อกำหนด</strong> (ต้องเป็นท่อกลม Pipe ขนาด 30-40 มม. สำหรับผู้พิการหรือทุพพลภาพ และคนชรา (ฉบับที่ 2) พ.ศ. 2564)</span>
                 </li>`;
             }
+
+            // --- Check points: ขนาดลูกตั้งและลูกนอน 3 ประเภทอาคาร ---
+            // 1. อาคารที่อยู่อาศัย (Riser <= 0.20 m, Tread >= 0.22 m)
+            const pass_residential = (riser_h <= 0.20) && (tread_w >= 0.22);
+            if (pass_residential) {
+                complianceHTML += `<li class="flex items-start gap-2 bg-emerald-50 text-emerald-900 p-2.5 rounded border border-emerald-200">
+                    <i class="fa-solid fa-circle-check text-emerald-600 mt-0.5"></i>
+                    <span>ขนาดบันได (ลูกตั้ง ${riser_h.toFixed(2)} ม., ลูกนอน ${tread_w.toFixed(2)} ม.): <strong>ผ่านเกณฑ์อาคารที่อยู่อาศัย</strong> (ลูกตั้งไม่เกิน 0.20 ม., ลูกนอนไม่น้อยกว่า 0.22 ม.)</span>
+                </li>`;
+            } else {
+                complianceHTML += `<li class="flex items-start gap-2 bg-rose-50 text-rose-900 p-2.5 rounded border border-rose-200">
+                    <i class="fa-solid fa-xmark text-rose-600 text-base font-bold mt-0.5"></i>
+                    <span>ขนาดบันได (ลูกตั้ง ${riser_h.toFixed(2)} ม., ลูกนอน ${tread_w.toFixed(2)} ม.): <strong>ไม่ผ่านเกณฑ์อาคารที่อยู่อาศัย</strong> (ลูกตั้งไม่เกิน 0.20 ม., ลูกนอนไม่น้อยกว่า 0.22 ม.)</span>
+                </li>`;
+            }
+
+            // 2. อาคารอยู่อาศัยรวมและอื่นๆ (Riser <= 0.18 m, Tread >= 0.25 m)
+            const pass_public = (riser_h <= 0.18) && (tread_w >= 0.25);
+            if (pass_public) {
+                complianceHTML += `<li class="flex items-start gap-2 bg-emerald-50 text-emerald-900 p-2.5 rounded border border-emerald-200">
+                    <i class="fa-solid fa-circle-check text-emerald-600 mt-0.5"></i>
+                    <span>ขนาดบันได (ลูกตั้ง ${riser_h.toFixed(2)} ม., ลูกนอน ${tread_w.toFixed(2)} ม.): <strong>ผ่านเกณฑ์อาคารอยู่อาศัยรวมและอื่นๆ</strong> (ลูกตั้งไม่เกิน 0.18 ม., ลูกนอนไม่น้อยกว่า 0.25 ม.)</span>
+                </li>`;
+            } else {
+                complianceHTML += `<li class="flex items-start gap-2 bg-rose-50 text-rose-900 p-2.5 rounded border border-rose-200">
+                    <i class="fa-solid fa-xmark text-rose-600 text-base font-bold mt-0.5"></i>
+                    <span>ขนาดบันได (ลูกตั้ง ${riser_h.toFixed(2)} ม., ลูกนอน ${tread_w.toFixed(2)} ม.): <strong>ไม่ผ่านเกณฑ์อาคารอยู่อาศัยรวมและอื่นๆ</strong> (ลูกตั้งไม่เกิน 0.18 ม., ลูกนอนไม่น้อยกว่า 0.25 ม.)</span>
+                </li>`;
+            }
+
+            // 3. สำหรับผู้พิการ (Riser <= 0.18 m, Riser + Tread อยู่ในช่วง 0.43 - 0.48 m)
+            const sum_rt = riser_h + tread_w;
+            const pass_disabled = (riser_h <= 0.18) && (sum_rt >= 0.43 && sum_rt <= 0.48);
+            if (pass_disabled) {
+                complianceHTML += `<li class="flex items-start gap-2 bg-emerald-50 text-emerald-900 p-2.5 rounded border border-emerald-200">
+                    <i class="fa-solid fa-circle-check text-emerald-600 mt-0.5"></i>
+                    <span>ขนาดบันได (ลูกตั้ง ${riser_h.toFixed(2)} ม., ผลรวมลูกตั้ง+ลูกนอน ${sum_rt.toFixed(2)} ม.): <strong>ผ่านเกณฑ์สำหรับผู้พิการ</strong> (ลูกตั้งไม่เกิน 0.18 ม., ผลรวม 0.43-0.48 ม.)</span>
+                </li>`;
+            } else {
+                complianceHTML += `<li class="flex items-start gap-2 bg-rose-50 text-rose-900 p-2.5 rounded border border-rose-200">
+                    <i class="fa-solid fa-xmark text-rose-600 text-base font-bold mt-0.5"></i>
+                    <span>ขนาดบันได (ลูกตั้ง ${riser_h.toFixed(2)} ม., ผลรวมลูกตั้ง+ลูกนอน ${sum_rt.toFixed(2)} ม.): <strong>ไม่ผ่านเกณฑ์สำหรับผู้พิการ</strong> (ลูกตั้งไม่เกิน 0.18 ม., ผลรวม 0.43-0.48 ม.)</span>
+                </li>`;
+            }
+
             complianceListEl.innerHTML = complianceHTML;
 
             // Render Metrics Cards
