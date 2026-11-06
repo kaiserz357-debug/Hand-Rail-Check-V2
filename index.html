@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hand Rail Check by Ardharn ver01 2026 (ASCE 7-05 / AISC ASD)</title>
+    <title>Hand Rail Check Develop by Ardharn ver02 2026 (ASCE 7-05 / AISC ASD)</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Chart.js for Structural Visualization -->
@@ -42,9 +42,9 @@
             <div>
                 <div class="flex items-center gap-3">
                     <span class="bg-blue-500/20 border border-blue-400/40 text-blue-300 text-xs px-2.5 py-1 rounded-full font-semibold uppercase tracking-wider">Engineering App</span>
-                    <span class="text-xs text-slate-300">v01.2026</span>
+                    <span class="text-xs text-slate-300">v02.2026</span>
                 </div>
-                <h1 class="text-2xl sm:text-3xl font-bold mt-1 text-white tracking-tight">Hand Rail Check by Ardharn</h1>
+                <h1 class="text-2xl sm:text-3xl font-bold mt-1 text-white tracking-tight">Hand Rail Check Develop by Ardharn</h1>
                 <p class="text-xs sm:text-sm text-slate-300 mt-0.5">Reference Standard: ASCE 7-05 & AISC ASD (Structural Steel Design)</p>
             </div>
             <div class="flex items-center gap-2 self-stretch sm:self-auto justify-end">
@@ -314,7 +314,7 @@
     <!-- Footer -->
     <footer class="bg-slate-900 text-slate-400 py-4 text-center text-xs mt-8 no-print border-t border-slate-800">
         <div class="max-w-7xl mx-auto px-4">
-            <p>Hand Rail Structural Engineering Checker &copy; 2026 by Ardharn. Designed with ASCE7-05 & AISC ASD standard.</p>
+            <p>Hand Rail Structural Engineering Checker &copy; 2026 Develop by Ardharn. Designed with ASCE7-05 & AISC ASD standard.</p>
         </div>
     </footer>
 
@@ -372,7 +372,20 @@
                 pass_msg: "PASS: ราวจับผ่านเกณฑ์การทดสอบทั้งความแข็งแรง (Stress) และการแอ่นตัว (Deflection)",
                 fail_msg: "FAIL: ราวจับไม่ผ่านเกณฑ์ทดสอบ",
                 chart_x: "ระยะทางแนวนอน Horizontal Span (m)",
-                chart_y: "ความสูง Height (m)"
+                chart_y: "ความสูง Height (m)",
+                
+                // Compliance Check Translations (th)
+                bkk_pass: "ความสูงเสา ({val} ม.) ตั้งแต่ 0.9 ม. ขึ้นไป: <strong>เป็นไปตามข้อบัญญัติกรุงเทพมหานคร เรื่อง ควบคุมอาคาร พ.ศ. 2544 ข้อ 41</strong>",
+                bkk_fail: "ความสูงเสา ({val} ม.) ต่ำกว่า 0.9 ม.: <strong>ไม่เป็นไปตามข้อบัญญัติกรุงเทพมหานคร เรื่อง ควบคุมอาคาร พ.ศ. 2544 ข้อ 41</strong> (ความสูงขั้นต่ำต้องไม่น้อยกว่า 0.90 ม.)",
+                pipe_pass: "ราวมือจับเป็นท่อกลม (Pipe) ขนาดเส้นผ่านศูนย์กลาง {val} มม. (อยู่ในช่วง 30-40 มม.): <strong>เป็นไปตามมาตรฐานกฎกระทรวงกำหนดสิ่งอำนวยความสะดวกในอาคารสำหรับผู้พิการหรือทุพพลภาพ และคนชรา (ฉบับที่ 2) พ.ศ. 2564</strong>",
+                pipe_fail: "ราวมือจับหน้าตัด <strong>{name}</strong> ({val} มม.): <strong>ไม่อยู่ในช่วงขนาด 30-40 มม.</strong> (สำหรับข้อกำหนดผู้พิการหรือทุพพลภาพ และคนชรา (ฉบับที่ 2) พ.ศ. 2564)",
+                pipe_invalid: "ราวมือจับหน้าตัด <strong>{name}</strong>: <strong>ไม่เป็นไปตามข้อกำหนด</strong> (ต้องเป็นท่อกลม Pipe ขนาด 30-40 มม. สำหรับผู้พิการหรือทุพพลภาพ และคนชรา (ฉบับที่ 2) พ.ศ. 2564)",
+                res_pass: "ขนาดบันได (ลูกตั้ง {r} ม., ลูกนอน {t} ม.): <strong>ผ่านเกณฑ์อาคารที่อยู่อาศัย</strong> (ลูกตั้งไม่เกิน 0.20 ม., ลูกนอนไม่น้อยกว่า 0.22 ม.)",
+                res_fail: "ขนาดบันได (ลูกตั้ง {r} ม., ลูกนอน {t} ม.): <strong>ไม่ผ่านเกณฑ์อาคารที่อยู่อาศัย</strong> (ลูกตั้งไม่เกิน 0.20 ม., ลูกนอนไม่น้อยกว่า 0.22 ม.)",
+                pub_pass: "ขนาดบันได (ลูกตั้ง {r} ม., ลูกนอน {t} ม.): <strong>ผ่านเกณฑ์อาคารอยู่อาศัยรวมและอื่นๆ</strong> (ลูกตั้งไม่เกิน 0.18 ม., ลูกนอนไม่น้อยกว่า 0.25 ม.)",
+                pub_fail: "ขนาดบันได (ลูกตั้ง {r} ม., ลูกนอน {t} ม.): <strong>ไม่ผ่านเกณฑ์อาคารอยู่อาศัยรวมและอื่นๆ</strong> (ลูกตั้งไม่เกิน 0.18 ม., ลูกนอนไม่น้อยกว่า 0.25 ม.)",
+                dis_pass: "ขนาดบันได (ลูกตั้ง {r} ม., ผลรวมลูกตั้ง+ลูกนอน {sum} ม.): <strong>ผ่านเกณฑ์สำหรับผู้พิการ</strong> (ลูกตั้งไม่เกิน 0.18 ม., ผลรวม 0.43-0.48 ม.)",
+                dis_fail: "ขนาดบันได (ลูกตั้ง {r} ม., ผลรวมลูกตั้ง+ลูกนอน {sum} ม.): <strong>ไม่ผ่านเกณฑ์สำหรับผู้พิการ</strong> (ลูกตั้งไม่เกิน 0.18 ม., ผลรวม 0.43-0.48 ม.)"
             },
             en: {
                 print_report: "Print Report",
@@ -425,7 +438,20 @@
                 pass_msg: "PASS: Handrail structural members pass both Stress and Deflection limits",
                 fail_msg: "FAIL: Handrail structure failed structural check",
                 chart_x: "Horizontal Span (m)",
-                chart_y: "Height (m)"
+                chart_y: "Height (m)",
+                
+                // Compliance Check Translations (en)
+                bkk_pass: "Post height ({val} m) $\\ge$ 0.9 m: <strong>Complies with Bangkok Building Control Ordinance B.E. 2544 Section 41</strong>",
+                bkk_fail: "Post height ({val} m) < 0.9 m: <strong>Does not comply with Bangkok Building Control Ordinance B.E. 2544 Section 41</strong> (Minimum height must be at least 0.90 m)",
+                pipe_pass: "Top rail is a circular pipe with outer diameter {val} mm (within 30-40 mm range): <strong>Complies with Ministerial Regulation on Accessible Buildings for Persons with Disabilities, the Elderly or Infirm (No. 2) B.E. 2564</strong>",
+                pipe_fail: "Top rail section <strong>{name}</strong> ({val} mm): <strong>Outside 30-40 mm range</strong> (for Persons with Disabilities, the Elderly or Infirm (No. 2) B.E. 2564)",
+                pipe_invalid: "Top rail section <strong>{name}</strong>: <strong>Does not meet requirements</strong> (Must be a circular pipe of 30-40 mm diameter for Persons with Disabilities, the Elderly or Infirm (No. 2) B.E. 2564)",
+                res_pass: "Stair dimensions (Riser {r} m, Tread {t} m): <strong>Passes Residential Building criteria</strong> (Riser less than 0.20 m, Tread at least 0.22 m)",
+                res_fail: "Stair dimensions (Riser {r} m, Tread {t} m): <strong>Fails Residential Building criteria</strong> (Riser less than 0.20 m, Tread at least 0.22 m)",
+                pub_pass: "Stair dimensions (Riser {r} m, Tread {t} m): <strong>Passes Public/Multi-family Residential Building criteria</strong> (Riser less than 0.18 m, Tread at least 0.25 m)",
+                pub_fail: "Stair dimensions (Riser {r} m, Tread {t} m): <strong>Fails Public/Multi-family Residential Building criteria</strong> (Riser less than 0.18 m, Tread at least 0.25 m)",
+                dis_pass: "Stair dimensions (Riser {r} m, Sum of Riser+Tread {sum} m): <strong>Passes Accessible/Elderly Building criteria</strong> (Riser less than 0.18 m, Sum 0.43-0.48 m)",
+                dis_fail: "Stair dimensions (Riser {r} m, Sum of Riser+Tread {sum} m): <strong>Fails Accessible/Elderly Building criteria</strong> (Riser less than 0.18 m, Sum 0.43-0.48 m)"
             }
         };
 
@@ -569,17 +595,20 @@
             // --- Render Functional & Regulatory Compliance List ---
             const complianceListEl = document.getElementById("compliance_list");
             let complianceHTML = "";
+            const t = i18n[currentLang];
 
             // Condition 1: Height >= 0.9 m
             if (h_post_m >= 0.9) {
+                const msg = t.bkk_pass.replace("{val}", h_post_m.toFixed(2));
                 complianceHTML += `<li class="flex items-start gap-2 bg-emerald-50 text-emerald-900 p-2.5 rounded border border-emerald-200">
                     <i class="fa-solid fa-circle-check text-emerald-600 mt-0.5"></i>
-                    <span>ความสูงเสา (${h_post_m.toFixed(2)} ม.) ตั้งแต่ 0.9 ม. ขึ้นไป: <strong>เป็นไปตามข้อบัญญัติกรุงเทพมหานคร เรื่อง ควบคุมอาคาร พ.ศ. 2544 ข้อ 41</strong></span>
+                    <span>${msg}</span>
                 </li>`;
             } else {
+                const msg = t.bkk_fail.replace("{val}", h_post_m.toFixed(2));
                 complianceHTML += `<li class="flex items-start gap-2 bg-rose-50 text-rose-900 p-2.5 rounded border border-rose-200">
                     <i class="fa-solid fa-triangle-exclamation text-rose-600 mt-0.5"></i>
-                    <span>ความสูงเสา (${h_post_m.toFixed(2)} ม.) ต่ำกว่า 0.9 ม.: <strong>ไม่เป็นไปตามข้อบัญญัติกรุงเทพมหานคร เรื่อง ควบคุมอาคาร พ.ศ. 2544 ข้อ 41</strong> (ความสูงขั้นต่ำต้องไม่น้อยกว่า 0.90 ม.)</span>
+                    <span>${msg}</span>
                 </li>`;
             }
 
@@ -588,20 +617,23 @@
             if (railMat && railMat.type === 'pipe') {
                 const dia_mm = railMat.OD * 10; // แปลง cm เป็น mm
                 if (dia_mm >= 30 && dia_mm <= 40) {
+                    const msg = t.pipe_pass.replace("{val}", dia_mm.toFixed(1));
                     complianceHTML += `<li class="flex items-start gap-2 bg-emerald-50 text-emerald-900 p-2.5 rounded border border-emerald-200">
                         <i class="fa-solid fa-circle-check text-emerald-600 mt-0.5"></i>
-                        <span>ราวมือจับเป็นท่อกลม (Pipe) ขนาดเส้นผ่านศูนย์กลาง ${dia_mm.toFixed(1)} มม. (อยู่ในช่วง 30-40 มม.): <strong>เป็นไปตามมาตรฐานกฎกระทรวงกำหนดสิ่งอำนวยความสะดวกในอาคารสำหรับผู้พิการหรือทุพพลภาพ และคนชรา (ฉบับที่ 2) พ.ศ. 2564</strong></span>
+                        <span>${msg}</span>
                     </li>`;
                 } else {
+                    const msg = t.pipe_fail.replace("{name}", railName).replace("{val}", dia_mm.toFixed(1));
                     complianceHTML += `<li class="flex items-start gap-2 bg-rose-50 text-rose-900 p-2.5 rounded border border-rose-200">
                         <i class="fa-solid fa-xmark text-rose-600 text-base font-bold mt-0.5"></i>
-                        <span>ราวมือจับหน้าตัด <strong>${railName}</strong> (${dia_mm.toFixed(1)} มม.): <strong>ไม่อยู่ในช่วงขนาด 30-40 มม.</strong> (สำหรับข้อกำหนดผู้พิการหรือทุพพลภาพ และคนชรา (ฉบับที่ 2) พ.ศ. 2564)</span>
+                        <span>${msg}</span>
                     </li>`;
                 }
             } else {
+                const msg = t.pipe_invalid.replace("{name}", railName);
                 complianceHTML += `<li class="flex items-start gap-2 bg-rose-50 text-rose-900 p-2.5 rounded border border-rose-200">
                     <i class="fa-solid fa-xmark text-rose-600 text-base font-bold mt-0.5"></i>
-                    <span>ราวมือจับหน้าตัด <strong>${railName}</strong>: <strong>ไม่เป็นไปตามข้อกำหนด</strong> (ต้องเป็นท่อกลม Pipe ขนาด 30-40 มม. สำหรับผู้พิการหรือทุพพลภาพ และคนชรา (ฉบับที่ 2) พ.ศ. 2564)</span>
+                    <span>${msg}</span>
                 </li>`;
             }
 
@@ -609,28 +641,32 @@
             // 1. อาคารที่อยู่อาศัย (Riser <= 0.20 m, Tread >= 0.22 m)
             const pass_residential = (riser_h <= 0.20) && (tread_w >= 0.22);
             if (pass_residential) {
+                const msg = t.res_pass.replace("{r}", riser_h.toFixed(2)).replace("{t}", tread_w.toFixed(2));
                 complianceHTML += `<li class="flex items-start gap-2 bg-emerald-50 text-emerald-900 p-2.5 rounded border border-emerald-200">
                     <i class="fa-solid fa-circle-check text-emerald-600 mt-0.5"></i>
-                    <span>ขนาดบันได (ลูกตั้ง ${riser_h.toFixed(2)} ม., ลูกนอน ${tread_w.toFixed(2)} ม.): <strong>ผ่านเกณฑ์อาคารที่อยู่อาศัย</strong> (ลูกตั้งไม่เกิน 0.20 ม., ลูกนอนไม่น้อยกว่า 0.22 ม.)</span>
+                    <span>${msg}</span>
                 </li>`;
             } else {
+                const msg = t.res_fail.replace("{r}", riser_h.toFixed(2)).replace("{t}", tread_w.toFixed(2));
                 complianceHTML += `<li class="flex items-start gap-2 bg-rose-50 text-rose-900 p-2.5 rounded border border-rose-200">
                     <i class="fa-solid fa-xmark text-rose-600 text-base font-bold mt-0.5"></i>
-                    <span>ขนาดบันได (ลูกตั้ง ${riser_h.toFixed(2)} ม., ลูกนอน ${tread_w.toFixed(2)} ม.): <strong>ไม่ผ่านเกณฑ์อาคารที่อยู่อาศัย</strong> (ลูกตั้งไม่เกิน 0.20 ม., ลูกนอนไม่น้อยกว่า 0.22 ม.)</span>
+                    <span>${msg}</span>
                 </li>`;
             }
 
             // 2. อาคารอยู่อาศัยรวมและอื่นๆ (Riser <= 0.18 m, Tread >= 0.25 m)
             const pass_public = (riser_h <= 0.18) && (tread_w >= 0.25);
             if (pass_public) {
+                const msg = t.pub_pass.replace("{r}", riser_h.toFixed(2)).replace("{t}", tread_w.toFixed(2));
                 complianceHTML += `<li class="flex items-start gap-2 bg-emerald-50 text-emerald-900 p-2.5 rounded border border-emerald-200">
                     <i class="fa-solid fa-circle-check text-emerald-600 mt-0.5"></i>
-                    <span>ขนาดบันได (ลูกตั้ง ${riser_h.toFixed(2)} ม., ลูกนอน ${tread_w.toFixed(2)} ม.): <strong>ผ่านเกณฑ์อาคารอยู่อาศัยรวมและอื่นๆ</strong> (ลูกตั้งไม่เกิน 0.18 ม., ลูกนอนไม่น้อยกว่า 0.25 ม.)</span>
+                    <span>${msg}</span>
                 </li>`;
             } else {
+                const msg = t.pub_fail.replace("{r}", riser_h.toFixed(2)).replace("{t}", tread_w.toFixed(2));
                 complianceHTML += `<li class="flex items-start gap-2 bg-rose-50 text-rose-900 p-2.5 rounded border border-rose-200">
                     <i class="fa-solid fa-xmark text-rose-600 text-base font-bold mt-0.5"></i>
-                    <span>ขนาดบันได (ลูกตั้ง ${riser_h.toFixed(2)} ม., ลูกนอน ${tread_w.toFixed(2)} ม.): <strong>ไม่ผ่านเกณฑ์อาคารอยู่อาศัยรวมและอื่นๆ</strong> (ลูกตั้งไม่เกิน 0.18 ม., ลูกนอนไม่น้อยกว่า 0.25 ม.)</span>
+                    <span>${msg}</span>
                 </li>`;
             }
 
@@ -638,14 +674,16 @@
             const sum_rt = riser_h + tread_w;
             const pass_disabled = (riser_h <= 0.18) && (sum_rt >= 0.43 && sum_rt <= 0.48);
             if (pass_disabled) {
+                const msg = t.dis_pass.replace("{r}", riser_h.toFixed(2)).replace("{sum}", sum_rt.toFixed(2));
                 complianceHTML += `<li class="flex items-start gap-2 bg-emerald-50 text-emerald-900 p-2.5 rounded border border-emerald-200">
                     <i class="fa-solid fa-circle-check text-emerald-600 mt-0.5"></i>
-                    <span>ขนาดบันได (ลูกตั้ง ${riser_h.toFixed(2)} ม., ผลรวมลูกตั้ง+ลูกนอน ${sum_rt.toFixed(2)} ม.): <strong>ผ่านเกณฑ์สำหรับผู้พิการ</strong> (ลูกตั้งไม่เกิน 0.18 ม., ผลรวม 0.43-0.48 ม.)</span>
+                    <span>${msg}</span>
                 </li>`;
             } else {
+                const msg = t.dis_fail.replace("{r}", riser_h.toFixed(2)).replace("{sum}", sum_rt.toFixed(2));
                 complianceHTML += `<li class="flex items-start gap-2 bg-rose-50 text-rose-900 p-2.5 rounded border border-rose-200">
                     <i class="fa-solid fa-xmark text-rose-600 text-base font-bold mt-0.5"></i>
-                    <span>ขนาดบันได (ลูกตั้ง ${riser_h.toFixed(2)} ม., ผลรวมลูกตั้ง+ลูกนอน ${sum_rt.toFixed(2)} ม.): <strong>ไม่ผ่านเกณฑ์สำหรับผู้พิการ</strong> (ลูกตั้งไม่เกิน 0.18 ม., ผลรวม 0.43-0.48 ม.)</span>
+                    <span>${msg}</span>
                 </li>`;
             }
 
